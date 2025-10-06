@@ -14,20 +14,27 @@ class StockProductionLot(models.Model):
     @api.multi
     def _prepare_index_document(self):
         """Prepare lot data for MeiliSearch indexing."""
+        import re
+        
         docs = []
         for rec in self:
             # Get product SKU (default_code)
             sku = rec.product_id.default_code or ''
+            lot_name = rec.name or ''
+            
+            # Extract just the numbers from lot name for better number search
+            lot_numbers = re.sub(r'[^0-9]', ' ', lot_name).strip()
             
             docs.append({
                 'id': str(rec.id),
                 'lot_id': str(rec.id),
-                'lot_name': rec.name or '',
+                'lot_name': lot_name,
+                'lot_numbers': lot_numbers,  # Just the numbers, space-separated
                 'product_id': str(rec.product_id.id) if rec.product_id else '',
                 'product_name': rec.product_id.name if rec.product_id else '',
                 'sku': sku,
-                # Searchable text combines lot name and SKU for better search
-                'searchable_text': f"{rec.name or ''} {sku}".strip()
+                # Searchable text combines everything
+                'searchable_text': f"{lot_name} {lot_numbers} {sku}".strip()
             })
         return docs
 
@@ -82,10 +89,11 @@ class StockProductionLot(models.Model):
             settings_url = host + '/indexes/lots/settings'
             settings = {
                 'searchableAttributes': [
-                    'lot_name',       # Highest priority
-                    'sku',            # Second priority
-                    'product_name',   # Third priority
-                    'searchable_text' # Fourth priority
+                    'lot_name',       # Highest priority - full lot name
+                    'lot_numbers',    # Second priority - just numbers from lot name
+                    'sku',            # Third priority
+                    'product_name',   # Fourth priority
+                    'searchable_text' # Fifth priority
                 ],
                 'rankingRules': [
                     'words',
