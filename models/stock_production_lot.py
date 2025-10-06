@@ -89,8 +89,7 @@ class StockProductionLot(models.Model):
                 'searchableAttributes': [
                     'lot_name',       # Highest priority - full lot name
                     'lot_numbers',    # Second priority - just numbers from lot name
-                    'sku',            # Third priority
-                    'product_name'    # Fourth priority
+                    'sku'             # Third priority
                 ],
                 'rankingRules': [
                     'words',
