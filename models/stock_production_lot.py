@@ -94,11 +94,11 @@ class StockProductionLot(models.Model):
                 ],
                 'rankingRules': [
                     'words',
+                    'exactness',      # MOVED UP - prioritize exact matches first!
                     'typo',
                     'proximity',
-                    'attribute',  # This makes the searchableAttributes order matter
-                    'sort',
-                    'exactness'
+                    'attribute',      # This makes the searchableAttributes order matter
+                    'sort'
                 ],
                 'displayedAttributes': ['*'],
                 'filterableAttributes': ['product_id', 'lot_id'],
