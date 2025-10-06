@@ -58,6 +58,62 @@ class StockProductionLot(models.Model):
         return super(StockProductionLot, self).unlink()
 
     @api.model
+    def _configure_meili_index(self):
+        """Configure MeiliSearch index settings for optimal lot searching.
+        
+        Sets searchable attributes priority and ranking rules.
+        """
+        import requests
+        import json
+        
+        try:
+            host = self.env['ir.config_parameter'].sudo().get_param('meili.host')
+            key = self.env['ir.config_parameter'].sudo().get_param('meili.admin_key')
+            
+            if not host or not key:
+                return False
+            
+            headers = {
+                'Authorization': 'Bearer ' + key,
+                'Content-Type': 'application/json'
+            }
+            
+            # Configure index settings
+            settings_url = host + '/indexes/lots/settings'
+            settings = {
+                'searchableAttributes': [
+                    'lot_name',       # Highest priority
+                    'sku',            # Second priority
+                    'product_name',   # Third priority
+                    'searchable_text' # Fourth priority
+                ],
+                'rankingRules': [
+                    'words',
+                    'typo',
+                    'proximity',
+                    'attribute',  # This makes the searchableAttributes order matter
+                    'sort',
+                    'exactness'
+                ],
+                'displayedAttributes': ['*'],
+                'filterableAttributes': ['product_id', 'lot_id']
+            }
+            
+            response = requests.patch(settings_url, headers=headers, 
+                                     json=settings, timeout=10)
+            
+            if response.status_code in [200, 202]:
+                _logger.info("MeiliSearch index settings configured successfully")
+                return True
+            else:
+                _logger.warning("Failed to configure MeiliSearch settings: %s", response.text)
+                return False
+                
+        except Exception as e:
+            _logger.error("Error configuring MeiliSearch index: %s", str(e))
+            return False
+
+    @api.model
     def action_bulk_index_all_lots(self):
         """Bulk index all existing lots to MeiliSearch.
         
@@ -67,6 +123,9 @@ class StockProductionLot(models.Model):
         import time
         
         _logger.info("Starting bulk indexing of all lots to MeiliSearch...")
+        
+        # Configure index settings first
+        self._configure_meili_index()
         
         # Get all lots
         all_lots = self.search([])
