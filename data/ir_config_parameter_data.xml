@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="param_meili_host" model="ir.config_parameter">
+    <field name="key">meili.host</field>
+    <field name="value"></field>
+  </record>
+  <record id="param_meili_admin_key" model="ir.config_parameter">
+    <field name="key">meili.admin_key</field>
+    <field name="value"></field>
+  </record>
+</odoo>

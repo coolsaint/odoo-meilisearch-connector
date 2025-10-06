@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_meili_client,access_meili_client,model_meili_client,base.group_no_one,1,0,0,0
+access_meili_document_mixin,access_meili_document_mixin,model_meili_document_mixin,base.group_no_one,1,0,0,0

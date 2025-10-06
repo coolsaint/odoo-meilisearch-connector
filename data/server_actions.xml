@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Server Action for Bulk Indexing Lots -->
+    <record id="action_bulk_index_lots" model="ir.actions.server">
+        <field name="name">MeiliSearch: Bulk Index All Lots</field>
+        <field name="model_id" ref="stock.model_stock_production_lot"/>
+        <field name="binding_model_id" ref="stock.model_stock_production_lot"/>
+        <field name="state">code</field>
+        <field name="code">
+action = model.action_bulk_index_all_lots()
+        </field>
+    </record>
+
+    <!-- Menu item for easy access -->
+    <menuitem id="menu_meili_tools"
+              name="MeiliSearch"
+              parent="stock.menu_stock_config_settings"
+              sequence="100"/>
+
+    <record id="action_meili_bulk_index" model="ir.actions.server">
+        <field name="name">Bulk Index All Lots to MeiliSearch</field>
+        <field name="model_id" ref="stock.model_stock_production_lot"/>
+        <field name="state">code</field>
+        <field name="code">
+action = env['stock.production.lot'].action_bulk_index_all_lots()
+        </field>
+    </record>
+
+    <menuitem id="menu_meili_bulk_index"
+              name="Bulk Index Lots"
+              parent="menu_meili_tools"
+              action="action_meili_bulk_index"
+              sequence="10"/>
+</odoo>
+

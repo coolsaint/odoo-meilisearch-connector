@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_res_config_settings_meili" model="ir.ui.view">
+    <field name="name">res.config.settings.meili</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[hasclass('settings')]" position="inside">
+        <div class="app_settings_block" data-string="MeiliSearch" string="MeiliSearch" data-key="meili_connector_v12">
+          <h2>MeiliSearch Configuration</h2>
+          <div class="row mt16 o_settings_container">
+            <div class="col-12 col-lg-6 o_setting_box">
+              <div class="o_setting_left_pane"/>
+              <div class="o_setting_right_pane">
+                <label for="meili_host"/>
+                <div class="text-muted">
+                  MeiliSearch server URL (e.g., http://localhost:7700 or your cloud instance URL)
+                </div>
+                <field name="meili_host" placeholder="http://localhost:7700"/>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6 o_setting_box">
+              <div class="o_setting_left_pane"/>
+              <div class="o_setting_right_pane">
+                <label for="meili_admin_key"/>
+                <div class="text-muted">
+                  Your MeiliSearch admin API key
+                </div>
+                <field name="meili_admin_key" password="True"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+</odoo>
