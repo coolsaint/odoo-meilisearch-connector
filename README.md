@@ -19,10 +19,9 @@ A powerful and efficient Odoo 12 Community Edition module that integrates MeiliS
 
 - **Odoo**: 12.0 Community Edition
 - **Python**: 3.6+
-- **MeiliSearch**: 0.11.x - 0.28.x (tested with cloud instances)
+- **MeiliSearch**: Any version (tested with cloud instances)
 - **Python Packages**: 
-  - `meilisearch==0.11.2`
-  - `requests>=2.20.0`
+  - `requests>=2.20.0` (for direct HTTP API calls)
 
 ## 🔧 Installation
 
@@ -32,8 +31,11 @@ A powerful and efficient Odoo 12 Community Edition module that integrates MeiliS
 # Activate your Odoo virtual environment
 source /opt/odoo/odoo12-venv/bin/activate
 
-# Install required packages
-pip install meilisearch==0.11.2 requests
+# Install required package (or use requirements.txt)
+pip install requests
+
+# Or install from requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 2. Install the Odoo Module
@@ -139,13 +141,17 @@ curl -X POST 'https://your-instance.meilisearch.io/indexes/lots/search' \
 
 ## 🏗️ Architecture
 
-The module uses direct HTTP requests for maximum compatibility with MeiliSearch Cloud instances, bypassing the Python client library limitations with older Python versions.
+The module uses **direct HTTP requests** via the `requests` library for maximum compatibility with all MeiliSearch versions and cloud instances. This approach:
+- Works with any Python 3.6+ environment
+- Compatible with all MeiliSearch versions
+- No SDK version conflicts
+- Simpler, more maintainable code
 
 ### Key Components
 
-- **`meili_client.py`**: Connection management and authentication
-- **`document_mixin.py`**: Core indexing/deletion logic
-- **`stock_production_lot.py`**: Lot-specific implementation
+- **`meili_client.py`**: Connection testing and authentication
+- **`document_mixin.py`**: Core indexing/deletion logic using direct HTTP API calls
+- **`stock_production_lot.py`**: Lot-specific implementation with bulk indexing
 - **`res_config_settings.py`**: Configuration interface
 
 ### Batch Processing
@@ -168,12 +174,12 @@ The module uses direct HTTP requests for maximum compatibility with MeiliSearch 
 
 ### Import Errors
 
-**Problem**: `ModuleNotFoundError: No module named 'meilisearch'`
+**Problem**: `ModuleNotFoundError: No module named 'requests'`
 
 **Solution**:
 ```bash
 source /opt/odoo/odoo12-venv/bin/activate
-pip install meilisearch==0.11.2
+pip install requests
 sudo service odoo12 restart
 ```
 
