@@ -96,7 +96,14 @@ class StockProductionLot(models.Model):
                     'exactness'
                 ],
                 'displayedAttributes': ['*'],
-                'filterableAttributes': ['product_id', 'lot_id']
+                'filterableAttributes': ['product_id', 'lot_id'],
+                'separatorTokens': ['-', '_', '/', '\\', '.', ' '],  # Split on these characters
+                'nonSeparatorTokens': [],  # Keep numbers together
+                'disableTypo': False,  # Allow typo tolerance
+                'minWordSizeForTypos': {
+                    'oneTypo': 4,
+                    'twoTypos': 8
+                }
             }
             
             response = requests.patch(settings_url, headers=headers, 
