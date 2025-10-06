@@ -29,12 +29,10 @@ class StockProductionLot(models.Model):
                 'id': str(rec.id),
                 'lot_id': str(rec.id),
                 'lot_name': lot_name,
-                'lot_numbers': lot_numbers,  # Just the numbers, space-separated
+                'lot_numbers': lot_numbers,  # Just the numbers for number-only search
                 'product_id': str(rec.product_id.id) if rec.product_id else '',
                 'product_name': rec.product_id.name if rec.product_id else '',
-                'sku': sku,
-                # Searchable text combines everything
-                'searchable_text': f"{lot_name} {lot_numbers} {sku}".strip()
+                'sku': sku
             })
         return docs
 
@@ -92,8 +90,7 @@ class StockProductionLot(models.Model):
                     'lot_name',       # Highest priority - full lot name
                     'lot_numbers',    # Second priority - just numbers from lot name
                     'sku',            # Third priority
-                    'product_name',   # Fourth priority
-                    'searchable_text' # Fifth priority
+                    'product_name'    # Fourth priority
                 ],
                 'rankingRules': [
                     'words',
