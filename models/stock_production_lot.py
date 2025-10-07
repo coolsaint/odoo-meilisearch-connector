@@ -14,33 +14,15 @@ class StockProductionLot(models.Model):
     @api.multi
     def _prepare_index_document(self):
         """Prepare lot data for MeiliSearch indexing."""
-        import re
-        
         docs = []
         for rec in self:
-            # Get product SKU (default_code)
-            sku = rec.product_id.default_code or ''
-            lot_name = rec.name or ''
-            
-            # Extract just the numbers from lot name for better number search
-            lot_numbers = re.sub(r'[^0-9]', ' ', lot_name).strip()
-            
-            # Normalize lot name: if starts with SC, keep both formats
-            # SC0016229 → also searchable as 0016229
-            lot_normalized = lot_name
-            if lot_name.startswith('SC') and len(lot_name) == 9:
-                # SC + 7 digits → extract the 7 digits
-                lot_normalized = lot_name[2:]  # Remove 'SC' prefix
-            
             docs.append({
                 'id': str(rec.id),
                 'lot_id': str(rec.id),
-                'lot_name': lot_name,           # Original: SC0016229 or 0125481
-                'lot_numbers': lot_numbers,      # Pure numbers: 0016229 or 0125481
-                'lot_normalized': lot_normalized, # Normalized: 0016229 or 0125481
+                'lot_name': rec.name or '',
                 'product_id': str(rec.product_id.id) if rec.product_id else '',
                 'product_name': rec.product_id.name if rec.product_id else '',
-                'sku': sku
+                'sku': rec.product_id.default_code or ''
             })
         return docs
 
@@ -95,10 +77,8 @@ class StockProductionLot(models.Model):
             settings_url = host + '/indexes/lots/settings'
             settings = {
                 'searchableAttributes': [
-                    'lot_name',       # Priority 1 - Original: SC0016229 or 0125481
-                    'lot_normalized', # Priority 2 - Normalized: 0016229 (SC stripped)
-                    'lot_numbers',    # Priority 3 - Just numbers: 0016229
-                    'sku'             # Priority 4
+                    'lot_name',  # Priority 1 - Lot/Serial name
+                    'sku'        # Priority 2 - Product SKU
                 ],
                 'rankingRules': [
                     'words',
